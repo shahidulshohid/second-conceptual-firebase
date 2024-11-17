@@ -1,61 +1,100 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { authContext } from "../AuthProvider/AuthProvider";
 
-
 const Register = () => {
-    const {handleRegister} =  useContext(authContext)
+  const { handleRegister, manageProfile } = useContext(authContext);
+  const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        const name = e.target.name.value
-        const image = e.target.image.value
-        const email = e.target.email.value
-        const password = e.target.password.value
-        const conPassword = e.target.conPassword.value
-        console.log(name, image, email, password, conPassword)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('')
+    const name = e.target.name.value;
+    const image = e.target.image.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const conPassword = e.target.conPassword.value;
 
-        handleRegister(email, password)
+    if(password.length < 6){
+      setError('Password must contain at least 6 character')
+      return
     }
+    if (password !== conPassword) {
+      setError("password did not match");
+      return
+    }
+
+    if(!/[a-z]/.test(password)){
+      setError("Password must contain at least one lowercase letter")
+      return
+    }
+
+    if(!/[A-Z]/.test(password)){
+      setError("Password must contain at least one uppercase letter")
+      return
+    }
+    console.log(name, image, email, password, conPassword);
+
+    handleRegister(email, password)
+    .then(res => 
+      manageProfile(name, image)
+    )
+  };
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <div>
-        Name:<input 
-          type="text" name="name"
-          placeholder="Type here"
-          className="input input-bordered input-error w-full max-w-xs"
-        />
+          Name:
+          <input
+            type="text"
+            name="name"
+            placeholder="Type here"
+            className="input input-bordered input-error w-full max-w-xs"
+            required
+          />
         </div>
         <div>
-        Image:<input
-          type="text" name="image"
-          placeholder="Type here"
-          className="input input-bordered input-error w-full max-w-xs"
-        />
+          Image:
+          <input
+            type="text"
+            name="image"
+            placeholder="Type here"
+            className="input input-bordered input-error w-full max-w-xs"
+            required
+          />
         </div>
         <div>
-        Email:<input
-          type="text" name="email"
-          placeholder="Type here"
-          className="input input-bordered input-error w-full max-w-xs"
-        />
+          Email:
+          <input
+            type="text"
+            name="email"
+            placeholder="Type here"
+            className="input input-bordered input-error w-full max-w-xs"
+            required
+          />
         </div>
         <div>
-        Password:<input
-          type="text" name="password"
-          placeholder="Type here"
-          className="input input-bordered input-error w-full max-w-xs"
-        />
+          Password:
+          <input
+            type="text"
+            name="password"
+            placeholder="Type here"
+            className="input input-bordered input-error w-full max-w-xs"
+            required
+          />
         </div>
         <div>
-        Confirm Password<input
-          type="text" name="conPassword"
-          placeholder="Type here"
-          className="input input-bordered input-error w-full max-w-xs"
-        />
+          Confirm Password
+          <input
+            type="text"
+            name="conPassword"
+            placeholder="Type here"
+            className="input input-bordered input-error w-full max-w-xs"
+            required
+          />
         </div>
         <button type="submit">Register</button>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 };
